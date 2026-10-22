@@ -1,97 +1,92 @@
-name: Docker Image CI
+name: Build and push Docker image
 
 on:
   push:
-    branches: [ "INT_REL1_45", "PROD_REL1_45" ]
+    branches: ["INT_*", "PROD_*"]
+  workflow_dispatch:
 
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+permissions:
+  contents: read
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
+    runs-on: ubuntu-latest
+    environment: ${{ startsWith(github.ref_name, 'INT_') && 'INTEGRATION' || 'PRODUCTION' }}
     steps:
-
-      # ---------------------------------------------------
-      # 🧹 1. Runner infos
-      # ---------------------------------------------------
-      - name: Runner infos
+      - name: Rewrite Phabricator submodule URLs to GitHub
         run: |
-          df -h
-          ip a 
-          hostname
-          git config --global url."https://github.com/wmde/DataValuesJavaScript.git".insteadof "https://phabricator.wikimedia.org/source/datavalues-javascript.git"
-          git config --global url."https://github.com/wmde/WikibaseSerializationJavaScript.git".insteadof "https://phabricator.wikimedia.org/source/wikibase-serialization.git"
-          git config --global url."https://github.com/wmde/WikibaseDataModelJavaScript.git".insteadof "https://phabricator.wikimedia.org/source/wikibase-data-model.git"
+          git config --global url."https://github.com/wmde/DataValuesJavaScript.git".insteadOf "https://phabricator.wikimedia.org/source/datavalues-javascript.git"
+          git config --global url."https://github.com/wmde/WikibaseSerializationJavaScript.git".insteadOf "https://phabricator.wikimedia.org/source/wikibase-serialization.git"
+          git config --global url."https://github.com/wmde/WikibaseDataModelJavaScript.git".insteadOf "https://phabricator.wikimedia.org/source/wikibase-data-model.git"
 
-      # ---------------------------------------------------
-      # 🧬 2. Checkout
-      # ---------------------------------------------------
       - uses: actions/checkout@v5
         with:
           submodules: recursive
 
-      # ---------------------------------------------------
-      # 🛠️ 3. Buildx
-      # ---------------------------------------------------
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v3
 
-      # ---------------------------------------------------
-      # 🚂 4. Installer Railpack
-      # ---------------------------------------------------
-      - name: Install Railpack CLI
-        run: |
-          curl -sSL https://railpack.com/install.sh | sh
-          export PATH="$HOME/.local/bin:$PATH"
+      - name: Login to custom registry (INT)
+        if: startsWith(github.ref_name, 'INT_')
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.CUSTOM_REGISTRY_URL }}
+          username: ${{ secrets.CUSTOM_REGISTRY_USER }}
+          password: ${{ secrets.CUSTOM_REGISTRY_PASSWORD }}
 
-      # ---------------------------------------------------
-      # 📦 5. Générer le plan Railpack
-      # ---------------------------------------------------
-      - name: Prepare Railpack build plan
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          railpack prepare . \
-            --plan-out ./railpack-plan.json \
-            --info-out ./railpack-info.json
+      - name: Login to Docker Hub (PROD)
+        if: startsWith(github.ref_name, 'PROD_')
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # ---------------------------------------------------
-      # 🔐 6. Login suivant la branche
-      # ---------------------------------------------------
-      - name: Login to registry (depending on branch)
+      - name: Select target image
+        id: target
+        env:
+          CUSTOM_REPO: ${{ secrets.CUSTOM_REGISTRY_REPO }}
+          DH_USER: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
-          if [[ "${GITHUB_REF##*/}" == "PROD_REL1_45" ]]; then
-            echo "🔐 Logging into Docker Hub (production)"
-            echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+          if [[ "$GITHUB_REF_NAME" == PROD_* ]]; then
+            echo "image=${DH_USER}/wikiromandie" >> "$GITHUB_OUTPUT"
           else
-            echo "🔐 Logging into custom registry (integration)"
-            echo "${{ secrets.CUSTOM_REGISTRY_PASSWORD }}" | docker login ${{ secrets.CUSTOM_REGISTRY_URL }} -u "${{ secrets.CUSTOM_REGISTRY_USER }}" --password-stdin
+            echo "image=${CUSTOM_REPO}" >> "$GITHUB_OUTPUT"
           fi
 
-      # ---------------------------------------------------
-      # 🧱 7. Build + Push suivant la branche
-      # ---------------------------------------------------
-      - name: Build & Push Docker image
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.target.outputs.image }}
+          tags: |
+            type=raw,value=latest
+            type=sha,format=long,prefix=
+
+      - name: Install Railpack
         run: |
-          BRANCH="${GITHUB_REF##*/}"
-          TAG="${GITHUB_SHA}"
+          curl -sSL https://railpack.com/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-          if [[ "$BRANCH" == "PROD_REL1_45" ]]; then
-            IMAGE_NAME="${{ secrets.DOCKERHUB_USERNAME }}/wikiromandie"
-            echo "🚀 Building PROD image: $IMAGE_NAME:$TAG"
-          else
-            IMAGE_NAME="${{ secrets.CUSTOM_REGISTRY_REPO }}"
-            echo "🚀 Building INT image: $IMAGE_NAME:$TAG"
-          fi
+      - name: Generate Railpack build plan
+        run: railpack prepare . --plan-out ./railpack-plan.json --info-out ./railpack-info.json
 
-          docker buildx build \
-            --build-arg BUILDKIT_SYNTAX="ghcr.io/railwayapp/railpack-frontend" \
-            -f ./railpack-plan.json \
-            --platform linux/amd64 \
-            --tag "$IMAGE_NAME:$TAG" \
-            --tag "$IMAGE_NAME:latest" \
-            --push \
-            --progress=plain \
-            .
+      - name: Build and push image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./railpack-plan.json
+          platforms: linux/amd64
+          build-args: |
+            BUILDKIT_SYNTAX=ghcr.io/railwayapp/railpack-frontend
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Dokploy Deployment
+        if: startsWith(github.ref_name, 'INT_')
+        uses: benbristow/dokploy-deploy-action@0.2.2
+        with:
+          api_token: ${{ secrets.DOKPLOY_AUTH_TOKEN }}
+          application_id: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+          dokploy_url: ${{ secrets.DOKPLOY_URL }}
+          service_type: application
