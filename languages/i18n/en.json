@@ -1066,6 +1066,7 @@
 	"right-blockemail": "Block or unblock a user from sending email",
 	"right-hideuser": "Block or unblock a username, hiding or unhiding it from the public",
 	"right-ipblock-exempt": "Bypass IP blocks, auto-blocks and range blocks",
+	"right-logentryimport": "Import log entries",
 	"right-unblockself": "Unblock oneself",
 	"right-protect": "Change protection settings and edit cascade-protected pages",
 	"right-editprotected": "Edit pages protected as \"{{int:protect-level-sysop}}\"",
@@ -1222,6 +1223,7 @@
 	"action-viewsuppressed": "view revisions hidden from any user",
 	"action-hideuser": "block or unblock a username, hiding or unhiding it from the public",
 	"action-ipblock-exempt": "bypass IP blocks, auto-blocks and range blocks",
+	"action-logentryimport": "import log entries",
 	"action-unblockself": "unblock oneself",
 	"action-noratelimit": "not be affected by rate limits",
 	"action-reupload-own": "overwrite existing files uploaded by oneself",
@@ -3995,7 +3997,6 @@
 	"userlogout-submit": "Log out",
 	"userlogout-continue": "Do you want to log out?",
 	"userlogout-temp": "If you are editing on a shared device like a library or school computer, you can exit this session to prevent other people from using this temporary account.",
-	"userlogout-temp-moreinfo": "Please be aware that editing with multiple temporary accounts may be against the rules of this wiki and you could be blocked if this happens frequently.",
 	"userlogout-temp-messagebox-title": "Are you sure you want to exit session and log out?",
 	"userlogout-temp-messagebox-body": "Once you log out, you will no longer be able to access this temporary account.",
 	"temp-user-logout-confirm-title": "Exit session",
@@ -4084,6 +4085,7 @@
 	"right-renameuser-global": "Global rename users",
 	"renameuser-renamed-notice": "This {{GENDER:$1|user}} has been renamed.\nThe rename log is provided below for reference.",
 	"log-unknown-action": "performed unknown action \"$2\" on [[$1]]",
+	"log-unsafe-logentry": "(This log entry could not be shown, because its parameters contain unsafe serialized data.)",
 	"createacct-benefit-heading-temp-user": "Thank you for contributing to {{SITENAME}}.\nCreate an account to access more features.",
 	"createacct-benefit-subheading-temp-user": "{{SITENAME}} is made by people like you. With an account you can have a permanent and secure identity with access to features like:",
 	"benefit-1-description": "Watchlists that allow you to keep track of pages that you’re interested in.",
@@ -4091,5 +4093,6 @@
 	"benefit-3-description": "Preferences that allow you to customize your experience.",
 	"temp-user-unable-to-acquire": "Unable to acquire a temporary account username. Please try again.",
 	"table-of-contents-show-button-aria-label": "Show the table of contents",
-	"table-of-contents-hide-button-aria-label": "Hide the table of contents"
+	"table-of-contents-hide-button-aria-label": "Hide the table of contents",
+	"mypage-disallowed-action": "For security reasons, action \"$1\" cannot be used on the page Special:MyPage."
 }

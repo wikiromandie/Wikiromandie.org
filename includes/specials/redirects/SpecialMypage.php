@@ -37,6 +37,13 @@ class SpecialMypage extends RedirectSpecialArticle {
 
 	/** @inheritDoc */
 	public function getRedirect( $subpage ) {
+		// T120386 - disallow raw action
+		if ( $this->getRequest()->getRawVal( 'action' ) === 'raw' ) {
+			return false;
+		}
+
+		// This should be unreachable as the same is already done in execute() above.
+		// Repeated just to be sure.
 		if ( $this->tempUserConfig->isEnabled() && $this->getUser()->isAnon() ) {
 			return false;
 		}
@@ -57,6 +64,14 @@ class SpecialMypage extends RedirectSpecialArticle {
 	public function personallyIdentifiableTarget() {
 		return true;
 	}
+
+	protected function showNoRedirectPage() {
+		$action = $this->getRequest()->getRawVal( 'action' ) ?? 'view';
+		$this->getOutput()->addHTML(
+			$this->msg( 'mypage-disallowed-action' )->params( $action )->escaped()
+		);
+	}
+
 }
 
 /**

@@ -1583,6 +1583,7 @@ config-schema:
         description: |-
             Site admin email address.
             Defaults to "wikiadmin@$wgServerName" (in Setup.php).
+            @see $wgHTTPUserAgentContact
     PasswordSender:
         default: false
         description: |-
@@ -6618,8 +6619,10 @@ config-schema:
         description: 'Fully specified path to git binary'
     GitRepositoryViewers:
         default:
-            'https://(?:[a-z0-9_]+@)?gerrit.wikimedia.org/r/(?:p/)?(.*)': 'https://gerrit.wikimedia.org/g/%R/+/%H'
-            'ssh://(?:[a-z0-9_]+@)?gerrit.wikimedia.org:29418/(.*)': 'https://gerrit.wikimedia.org/g/%R/+/%H'
+            'https://(?:[a-z0-9_]+@)?gerrit\.wikimedia\.org/r/(?:p/)?(.*)': 'https://gerrit.wikimedia.org/g/%R/+/%H'
+            'ssh://(?:[a-z0-9_]+@)?gerrit\.wikimedia\.org:29418/(.*)': 'https://gerrit.wikimedia.org/g/%R/+/%H'
+            'https://github\.com/(.*?)(\.git)?': 'https://github.com/$1/commit/%H'
+            'git@github\.com:(.*?)(\.git)?': 'https://github.com/$1/commit/%H'
         type: object
         description: |-
             Map GIT repository URLs to viewer URLs to provide links in Special:Version
@@ -8059,6 +8062,22 @@ config-schema:
         description: |-
             Timeout for HTTP requests done internally for transwiki imports, in seconds.
             @since 1.29
+    HTTPUserAgentContact:
+        default: false
+        type:
+            - string
+            - boolean
+        description: |-
+            Contact URL and/or email address in the User-Agent header of outgoing HTTP requests
+            This defaults to $wgCanonicalServer and is placed in parentheses after
+            `MediaWiki/{MW_VERSION}` in the default user agent string for all outgoing HTTP
+            requests, including via HttpRequestFactory, ForeignAPIRepo, and MultiHttpClient.
+            If you operate an intranet wiki, or a wiki farm with many different domain, it is
+            recommended to override this and set a fixed public homepage or email address instead.
+            @since 1.47 (also backported to 1.43.10, 1.45.5, 1.46.1)
+            @see $wgEmergencyContact
+            @see MediaWiki\Http\HttpRequestFactory::getUserAgent
+            @see https://www.mediawiki.org/wiki/InstantCommons#User-Agent_Policy
     AsyncHTTPTimeout:
         default: 25
         description: 'Timeout for Asynchronous (background) HTTP requests, in seconds.'

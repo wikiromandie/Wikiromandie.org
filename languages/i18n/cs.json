@@ -72,7 +72,8 @@
 			"WikipedistaOndra",
 			"Woytecr",
 			"YjM",
-			"לערי ריינהארט"
+			"לערי ריינהארט",
+			"Comfyquiettree"
 		]
 	},
 	"pagecategories": "{{PLURAL:$1|Kategorie}}",
@@ -3612,7 +3613,10 @@
 	"logentry-rights-rights-kept": "{{GENDER:$2|ponecháno nezměněno}} $1",
 	"logentry-rights-rights-legacy": "$1 {{GENDER:$2|změnil|změnila}} členství $3 ve skupinách",
 	"logentry-rights-autopromote": "Členství {{GENDER:$2|uživatele|uživatelky}} $1 ve skupinách bylo automaticky změněno: $7",
+	"logentry-rights-autopromote-granted": "{{GENDER:$2|získal|získala}} $1",
+	"logentry-rights-autopromote-revoked": "{{GENDER:$2|ztratil|ztratila}} $1",
 	"logentry-rights-autopromote-expiry-changed": "{{GENDER:$2|změnil|změnila}} expiraci $1",
+	"logentry-rights-autopromote-kept": "{{GENDER:$2|ponechal|ponechala}} $1 beze změny",
 	"logentry-upload-upload": "$1 {{GENDER:$2|načetl|načetla}} $3",
 	"logentry-upload-overwrite": "$1 {{GENDER:$2|načetl|načetla}} novou verzi $3",
 	"logentry-upload-revert": "$1 {{GENDER:$2|vrátil|vrátila}} $3 na starou verzi",
@@ -3982,7 +3986,6 @@
 	"userlogout-submit": "Odhlásit se",
 	"userlogout-continue": "Chcete se odhlásit?",
 	"userlogout-temp": "Pokud upravujete na sdíleném zařízení, jako je knihovna nebo školní počítač, můžete tuto relaci ukončit, abyste zabránili ostatním lidem v používání tohoto dočasného účtu.",
-	"userlogout-temp-moreinfo": "Uvědomte si prosím, že editace s vícero dočasnými účty může být v rozporu s pravidly této wiki a pokud se to děje často, můžete být zablokováni.",
 	"userlogout-temp-messagebox-title": "Opravdu chcete ukončit relaci a odhlásit se?",
 	"userlogout-temp-messagebox-body": "Jakmile se odhlásíte, nebudete mít k tomuto dočasnému účtu již přístup.",
 	"temp-user-logout-confirm-title": "Ukončit relaci",
@@ -4053,6 +4056,7 @@
 	"renameuser-error-temp-user": "Nemůžete přejmenovat dočasný účet „$1“.",
 	"renameuser-error-temp-user-reserved": "Nemůžete použít „$1“. To je vyhrazeno pro dočasné účty.",
 	"renameuser-error-unexpected-name": "Cílový uživatel nemá očekávané jméno.",
+	"renameuser-error-global-detaching": "Uživatel má globalní účet. K přejmenování tohot účtu použijte CentralAuth.",
 	"renameuser-error-global-rights": "Nemáte oprávnění přejmenovávat globální uživatele.",
 	"renameusersuccess": "{{GENDER:$2|Uživatel|Uživatelka}} „<nowiki>$1</nowiki>“ {{GENDER:$2|byl úspěšně přejmenován|byla úspěšně přejmenována}} na „<nowiki>$2</nowiki>“",
 	"renameuser-page-exists": "Stránka $1 již existuje a nelze ji automaticky přepsat.",
@@ -4070,6 +4074,7 @@
 	"right-renameuser-global": "Přejmenovávání globálních uživatelů",
 	"renameuser-renamed-notice": "{{GENDER:$1|Tento uživatel byl přejmenován.|Tato uživatelka byla přejmenována.}}\nPro přehled je níže zobrazen výpis z knihy přejmenování uživatelů.",
 	"log-unknown-action": "provedl neznámou akci „$2“ na [[$1]]",
+	"log-unsafe-logentry": "(Tento protokolovací záznam nebylo možné zobrazit, protože jeho parametry obsahují nezabezpečená serializovaná data.)",
 	"createacct-benefit-heading-temp-user": "Děkujeme za příspěvek do {{grammar:2sg|{{SITENAME}}}}.\nZaložte si účet, abyste získali přístup k dalším funkcím.",
 	"createacct-benefit-subheading-temp-user": "{{grammar:4sg|{{SITENAME}}}} vytvářejí lidé jako vy. S účtem můžete mít trvalou a bezpečnou identitu s přístupem k funkcím jako:",
 	"benefit-1-description": "Seznamy sledovaných stránek, které vám umožňují sledovat změny stránek, které vás zajímají.",
@@ -4077,5 +4082,6 @@
 	"benefit-3-description": "Nastavení, které vám umožní přizpůsobit si prožitek.",
 	"temp-user-unable-to-acquire": "Nebylo vám možné přidělit dočasný uživatelský účet. Zkuste to prosím znovu později.",
 	"table-of-contents-show-button-aria-label": "Zobrazit obsah",
-	"table-of-contents-hide-button-aria-label": "Skrýt obsah"
+	"table-of-contents-hide-button-aria-label": "Skrýt obsah",
+	"mypage-disallowed-action": "Z bezpečnostních důvodů nelze na stránku Speciální:Moje stránka použít akci „$1“."
 }

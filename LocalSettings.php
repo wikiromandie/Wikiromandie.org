@@ -291,7 +291,6 @@ $wgEnableMetaDescriptionFunctions = true;
 
 # SemanticWiki -- https://github.com/SemanticMediaWiki/SemanticMediaWiki/blob/master/docs/INSTALL.md
 wfLoadExtension('SemanticMediaWiki');
-enableSemantics(getenv('WGSITENAME'));
 
 # PageImages
 wfLoadExtension('PageImages');
