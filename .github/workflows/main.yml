@@ -19,11 +19,11 @@ jobs:
           git config --global url."https://github.com/wmde/WikibaseSerializationJavaScript.git".insteadOf "https://phabricator.wikimedia.org/source/wikibase-serialization.git"
           git config --global url."https://github.com/wmde/WikibaseDataModelJavaScript.git".insteadOf "https://phabricator.wikimedia.org/source/wikibase-data-model.git"
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
 
       - name: Login to custom registry (INT)
         if: startsWith(github.ref_name, 'INT_')
@@ -53,7 +53,7 @@ jobs:
           fi
 
       - id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ steps.target.outputs.image }}
           tags: |
@@ -69,7 +69,7 @@ jobs:
         run: railpack prepare . --plan-out ./railpack-plan.json --info-out ./railpack-info.json
 
       - name: Build and push image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./railpack-plan.json
