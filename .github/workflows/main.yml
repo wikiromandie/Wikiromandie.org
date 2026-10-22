@@ -11,7 +11,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: ${{ startsWith(github.ref_name, 'INT_') && 'INTEGRATION' || 'PRODUCTION' }}
+    environment: ${{ startsWith(github.ref_name, 'PROD_') && 'INTEGRATION' || 'TEST' }}
     steps:
       - name: Rewrite Phabricator submodule URLs to GitHub
         run: |
@@ -82,7 +82,16 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Dokploy Deployment
+      - name: Dokploy Deployment into INT
+        if: startsWith(github.ref_name, 'PROD_')
+        uses: benbristow/dokploy-deploy-action@0.2.2
+        with:
+          api_token: ${{ secrets.DOKPLOY_AUTH_TOKEN }}
+          application_id: ${{ secrets.DOKPLOY_APPLICATION_ID }}
+          dokploy_url: ${{ secrets.DOKPLOY_URL }}
+          service_type: application
+
+      - name: Dokploy Deployment into TEST
         if: startsWith(github.ref_name, 'INT_')
         uses: benbristow/dokploy-deploy-action@0.2.2
         with:
